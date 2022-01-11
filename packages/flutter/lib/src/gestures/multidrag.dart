@@ -18,7 +18,7 @@ import 'recognizer.dart';
 import 'velocity_tracker.dart';
 
 /// Signature for when [MultiDragGestureRecognizer] recognizes the start of a drag gesture.
-typedef GestureMultiDragStartCallback = Drag? Function(PointerEvent startEvent);
+typedef GestureMultiDragStartCallback = Drag? Function(PointerDownEvent startEvent);
 
 /// Per-pointer state for a [MultiDragGestureRecognizer].
 ///
@@ -39,7 +39,7 @@ abstract class MultiDragPointerState {
   final DeviceGestureSettings? gestureSettings;
 
   /// The [PointerEvent] performing the multi-drag gesture.
-  final PointerEvent initialPointerEvent;
+  final PointerDownEvent initialPointerEvent;
   
   /// The global coordinates of the pointer when the pointer contacted the screen.
   Offset get initialPosition => initialPointerEvent.position;
@@ -137,7 +137,7 @@ abstract class MultiDragPointerState {
     _pendingDelta = null;
     _lastPendingEventTimestamp = null;
     // Call client last to avoid reentrancy.
-    _client!.start(DragStartDetails.fromPointerDownEvent(initialPointerEvent as PointerDownEvent));
+    _client!.start(DragStartDetails.fromPointerDownEvent(initialPointerEvent));
   }
 
   void _up(PointerUpEvent event) {
@@ -287,10 +287,10 @@ abstract class MultiDragGestureRecognizer extends GestureRecognizer {
     if (state == null)
       return; // We might already have canceled this drag if the up comes before the accept.
     // todo: I'm confused, if we map the event's pointer to a MultiDragPointerState, then
-    state.accepted((PointerEvent initialEvent) => _startDrag(initialEvent));
+    state.accepted((PointerDownEvent initialEvent) => _startDrag(initialEvent));
   }
 
-  Drag? _startDrag(PointerEvent initialEvent) {
+  Drag? _startDrag(PointerDownEvent initialEvent) {
     assert(_pointers != null);
     final MultiDragPointerState state = _pointers![initialEvent.pointer]!;
     assert(state != null);
@@ -338,7 +338,7 @@ abstract class MultiDragGestureRecognizer extends GestureRecognizer {
 }
 
 class _ImmediatePointerState extends MultiDragPointerState {
-  _ImmediatePointerState(PointerEvent event, DeviceGestureSettings? deviceGestureSettings) : super(event, deviceGestureSettings);
+  _ImmediatePointerState(PointerDownEvent event, DeviceGestureSettings? deviceGestureSettings) : super(event, deviceGestureSettings);
 
   @override
   void checkForResolutionAfterMove() {
@@ -398,7 +398,7 @@ class ImmediateMultiDragGestureRecognizer extends MultiDragGestureRecognizer {
 
 
 class _HorizontalPointerState extends MultiDragPointerState {
-  _HorizontalPointerState(PointerEvent event, DeviceGestureSettings? deviceGestureSettings): super(event, deviceGestureSettings);
+  _HorizontalPointerState(PointerDownEvent event, DeviceGestureSettings? deviceGestureSettings): super(event, deviceGestureSettings);
 
   @override
   void checkForResolutionAfterMove() {
@@ -458,7 +458,7 @@ class HorizontalMultiDragGestureRecognizer extends MultiDragGestureRecognizer {
 
 
 class _VerticalPointerState extends MultiDragPointerState {
-  _VerticalPointerState(PointerEvent event, DeviceGestureSettings? deviceGestureSettings): super(event, deviceGestureSettings);
+  _VerticalPointerState(PointerDownEvent event, DeviceGestureSettings? deviceGestureSettings): super(event, deviceGestureSettings);
 
   @override
   void checkForResolutionAfterMove() {
@@ -517,7 +517,7 @@ class VerticalMultiDragGestureRecognizer extends MultiDragGestureRecognizer {
 }
 
 class _DelayedPointerState extends MultiDragPointerState {
-  _DelayedPointerState(PointerEvent event, Duration delay, DeviceGestureSettings? deviceGestureSettings)
+  _DelayedPointerState(PointerDownEvent event, Duration delay, DeviceGestureSettings? deviceGestureSettings)
       : assert(delay != null),
         super(event, deviceGestureSettings) {
     _timer = Timer(delay, _delayPassed);

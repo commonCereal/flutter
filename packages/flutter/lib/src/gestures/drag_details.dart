@@ -18,12 +18,12 @@ import 'velocity_tracker.dart';
 ///  * [DragStartDetails], which takes a [PointerDownEvent].
 ///  * [DragUpdateDetails], which takes a [PointerMoveEvent].
 ///  * [DragEndDetails], the details for [PointerUpEvent].
-abstract class DragDetails {
+abstract class DragDetails<P extends PointerEvent> {
 
   /// Creates drag details containing the associated [PointerEvent].
   ///
-  /// The [raw] argument is required.
-  DragDetails(this.raw);
+  /// The [event] argument is required.
+  DragDetails(this.event);
 
   /// The PointerEvent that this DragDetail describes.
   ///
@@ -33,7 +33,7 @@ abstract class DragDetails {
   /// Example:
   /// The consumer may want to pan the view if dragging with [kSecondaryMouseButton]
   /// and drag a selection box that follows the mouse if dragging with [kPrimaryMouseButton].
-  final PointerEvent raw;
+  final P event;
 }
 
 /// Details object for callbacks that use [GestureDragDownCallback].
@@ -44,7 +44,7 @@ abstract class DragDetails {
 ///  * [DragStartDetails], the details for [GestureDragStartCallback].
 ///  * [DragUpdateDetails], the details for [GestureDragUpdateCallback].
 ///  * [DragEndDetails], the details for [GestureDragEndCallback].
-class DragDownDetails extends DragDetails {
+class DragDownDetails extends DragDetails<PointerDownEvent> {
   /// Creates details for a [GestureDragDownCallback].
   ///
   /// The [globalPosition] argument must not be null.
@@ -91,7 +91,7 @@ typedef GestureDragDownCallback = void Function(DragDownDetails details);
 ///  * [DragDownDetails], the details for [GestureDragDownCallback].
 ///  * [DragUpdateDetails], the details for [GestureDragUpdateCallback].
 ///  * [DragEndDetails], the details for [GestureDragEndCallback].
-class DragStartDetails extends DragDetails {
+class DragStartDetails extends DragDetails<PointerDownEvent> {
   /// Creates details for a [GestureDragStartCallback].
   ///
   /// The [globalPosition] argument must not be null.
@@ -162,7 +162,7 @@ typedef GestureDragStartCallback = void Function(DragStartDetails details);
 ///  * [DragDownDetails], the details for [GestureDragDownCallback].
 ///  * [DragStartDetails], the details for [GestureDragStartCallback].
 ///  * [DragEndDetails], the details for [GestureDragEndCallback].
-class DragUpdateDetails extends DragDetails {
+class DragUpdateDetails extends DragDetails<PointerMoveEvent> {
   /// Creates details for a [DragUpdateDetails].
   ///
   /// The [delta] argument must not be null.
@@ -250,7 +250,7 @@ typedef GestureDragUpdateCallback = void Function(DragUpdateDetails details);
 ///  * [DragDownDetails], the details for [GestureDragDownCallback].
 ///  * [DragStartDetails], the details for [GestureDragStartCallback].
 ///  * [DragUpdateDetails], the details for [GestureDragUpdateCallback].
-class DragEndDetails extends DragDetails {
+class DragEndDetails extends DragDetails<PointerUpEvent> {
   /// Creates details for a [GestureDragEndCallback].
   ///
   /// The [velocity] argument must not be null.
